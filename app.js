@@ -43,18 +43,53 @@ var luisEndpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/2d
 var luisRecognizer = new builder.LuisRecognizer(luisEndpoint);
 bot.recognizer(luisRecognizer);
 
-bot.dialog('HomePilot', [
+bot.dialog('TurnOnLights', [
     function (session, args, next) {
         var intentResult = args.intent;
         var entities = builder.EntityRecognizer.findEntity(intentResult.entities, 'HomeAutomation.Device');
 
-        session.send(`votre intention ${intentResult.intent}`);
+       var string = 'Okay, I turn on : ';
 
         intentResult.entities.forEach(function(element){
-            session.send(`Entity: ${element.entity}`);
-            session.send(`Type: ${element.type}`);
+            if(element.type != 'HomeAutomation.Operation') string += element.entity + ' ';
         }, this);
+        session.send(string);
     }
-]).triggerAction({
+])
+.triggerAction({
     matches: 'HomeAutomation.TurnOn'
+});
+
+bot.dialog('TurnOffLights', [
+    function (session, args, next) {
+        var intentResult = args.intent;
+        var entities = builder.EntityRecognizer.findEntity(intentResult.entities, 'HomeAutomation.Device');
+
+        var string = 'Okay, I turn off : ';
+        
+        intentResult.entities.forEach(function(element){
+            if(element.type != 'HomeAutomation.Operation') string += element.entity + ' ';
+        }, this);
+        session.send(string);
+    }
+])
+.triggerAction({
+    matches: 'HomeAutomation.TurnOff'
+});
+
+bot.dialog('ChangeColor', [
+    function (session, args, next) {
+        var intentResult = args.intent;
+        var entities = builder.EntityRecognizer.findEntity(intentResult.entities, 'HomeAutomation.Device');
+
+        var string = 'Okay, I will change the color : ';
+        
+        intentResult.entities.forEach(function(element){
+            string += element.entity + ' ';
+        }, this);
+        session.send(string);
+    }
+])
+.triggerAction({
+    matches: 'HomeAutomation.ChangeColor'
 });
