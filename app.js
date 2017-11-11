@@ -14,7 +14,6 @@ var connector = new builder.ChatConnector({
 });
 // Listen for messages from users 
 server.post('/api/messages', connector.listen());
-// Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
 var bot = new builder.UniversalBot(connector);
 
 // POST /knowledgebases/8cd55a06-47da-4e85-823b-d914c1b515dc/generateAnswer
@@ -22,6 +21,8 @@ var bot = new builder.UniversalBot(connector);
 // Ocp-Apim-Subscription-Key: aee2569cdbfa49859e1ce7546fd5f364
 // Content-Type: application/json
 // {"question":"hi"}
+
+/*
 var qnaMakerRecognizer = new cognitiveServices.QnAMakerRecognizer({
     knowledgeBaseId: '8cd55a06-47da-4e85-823b-d914c1b515dc',
     subscriptionKey: 'aee2569cdbfa49859e1ce7546fd5f364'
@@ -32,28 +33,26 @@ var qnaMakerDialog = new cognitiveServices.QnAMakerDialog({
     qnaThreshold: 0.4,
     defaultMessage: 'Allez prendre un verre :) car je n\ai pas compris'
 });
-
+*/
 //bot.dialog('/', qnaMakerDialog);
 
 
 //LUIS
 
-var luisEndpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/2df35c0c-d84d-48f3-baac-05f2c32a7bbc?subscription-key=acbd3995bb6748f7b8276209cdad3d98&verbose=true&timezoneOffset=0&q=";
+var luisEndpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/2df35c0c-d84d-48f3-baac-05f2c32a7bbc?subscription-key=acbd3995bb6748f7b8276209cdad3d98&staging=true&verbose=true&timezoneOffset=0&q=";
 var luisRecognizer = new builder.LuisRecognizer(luisEndpoint);
 bot.recognizer(luisRecognizer);
-
 
 bot.dialog('HomePilot', [
     function (session, args, next) {
         var intentResult = args.intent;
         var entities = builder.EntityRecognizer.findEntity(intentResult.entities, 'HomeAutomation.Device');
-       
-        session.send(`votre intension ${intentResult.intent}`);
+
+        session.send(`votre intention ${intentResult.intent}`);
 
         intentResult.entities.forEach(function(element){
             session.send(`Entity: ${element.entity}`);
-            session.send(`Entity: ${element.type}`);
-            session.send(`-----------------------------------`);
+            session.send(`Type: ${element.type}`);
         }, this);
     }
 ]).triggerAction({
